@@ -142,7 +142,6 @@ Red::CString RedSocket::GetCommand() {
     } else {
         m_buffer.clear();
     }
-    Logger::Debug("Command: \"{}\"", command.c_str());
     return command;
 }
 
