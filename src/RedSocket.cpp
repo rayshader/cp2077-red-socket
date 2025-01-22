@@ -130,14 +130,18 @@ Red::CString RedSocket::GetCommand() {
     if (!IsConnected()) {
         return {};
     }
-    const auto eoc = m_buffer.find_first_of("\r\n");
+    const auto eoc = m_buffer.find("\r\n");
 
     if (eoc == std::string::npos) {
         return {};
     }
     const Red::CString command = m_buffer.substr(0, eoc);
 
-    m_buffer = m_buffer.substr(eoc + 2);
+    if (m_buffer.length() > eoc + 2) {
+        m_buffer = m_buffer.substr(eoc + 2);
+    } else {
+        m_buffer.clear();
+    }
     Logger::Debug("Command: \"{}\"", command.c_str());
     return command;
 }
