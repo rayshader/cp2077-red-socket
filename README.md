@@ -41,11 +41,13 @@ to be sent and received.
 
 ### Redscript
 
-You need to create a `RedSocket`:
+You need to create a `RedSocket.Socket`:
 ```swift
-let socket = new RedSocket();
+import RedSocket.*
 
-// If ref<RedSocket> is released, internal network interface will be shutdown.
+let socket = new Socket();
+
+// If ref<Socket> is released, internal network interface will be shutdown.
 // It is expected to Disconnect the socket before instance is released.
 ```
 
