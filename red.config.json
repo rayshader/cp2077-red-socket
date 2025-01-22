@@ -1,0 +1,19 @@
+{
+  "name": "RedSocket",
+  "version": "0.1.0",
+  "licence": true,
+  "game": "game\\",
+  "stage": "stage\\",
+  "scripts": {
+    "redscript": {
+      "src": "scripts\\redscript\\"
+    },
+    "cet": {
+      "src": "scripts\\cet\\"
+    }
+  },
+  "plugin": {
+    "debug": "build\\windows\\x64\\debug\\",
+    "release": "build\\windows\\x64\\release\\"
+  }
+}

@@ -1,0 +1,15 @@
+{
+    __meta__ = {
+        version = "1.0"
+    },
+    ["windows|x64"] = {
+        ["asio#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "34a98b722587989d8251d9efe1df39f01f4f7cdf",
+                url = "https://gitlab.com/tboox/xmake-repo.git"
+            },
+            version = "1.32.0"
+        }
+    }
+}

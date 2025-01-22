@@ -1,0 +1,7 @@
+# Build
+.xmake/
+build/
+vsxmake2022/
+
+# IDE
+.idea/
