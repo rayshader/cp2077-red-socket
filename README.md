@@ -1,6 +1,6 @@
 # RedSocket
 
-![Cyberpunk 2077](https://img.shields.io/badge/Cyberpunk%202077-v2.2-blue)
+![Cyberpunk 2077](https://img.shields.io/badge/Cyberpunk%202077-v2.21-blue)
 ![GitHub License](https://img.shields.io/github/license/rayshader/cp2077-red-socket)
 [![Donate](https://img.shields.io/badge/donate-buy%20me%20a%20coffee-yellow)](https://www.buymeacoffee.com/lpfreelance)
 
@@ -18,15 +18,15 @@ CET.
 # Getting started
 
 ## Compatibility
-- Cyberpunk 2077 v2.2
-- [RED4ext] v1.26.0+
+- Cyberpunk 2077 v2.21
+- [RED4ext] v1.27.0+
 - [Redscript] 0.5.27+
-- [Cyber Engine Tweaks] 1.34.0+
+- [Cyber Engine Tweaks] 1.35.0+
 
 ## Installation
 1. Install requirements:
-- [RED4ext] v1.26.0+
-- [Cyber Engine Tweaks] 1.34.0+
+- [RED4ext] v1.27.0+
+- [Cyber Engine Tweaks] 1.35.0+
 
 2. Extract the [latest archive] into the Cyberpunk 2077 directory.
 

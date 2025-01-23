@@ -4,7 +4,7 @@ add_rules("mode.debug", "mode.release")
 set_policy("build.ccache", true)
 set_policy("package.requires_lock", true)
 
-set_config("version", "0.1.0")
+set_config("version", "0.2.0")
 
 -- Languages
 set_languages("c99", "cxx20")
