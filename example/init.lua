@@ -8,10 +8,12 @@ function require_verbose(path)
 end
 
 local theme = {
+    field = {
+        width = 120,
+    },
     colors = {
-        error = { 0.87058, 0.10196, 0.10196, 1 },
-        input = { 1, 1, 1, 1 },
-        output = { 0.97647, 0.70980, 0.13333, 1 },
+        success = { 0.32941, 0.86274, 0.32941, 1 },
+        error = { 0.86274, 0.32941, 0.32941, 1 },
     }
 }
 
@@ -22,11 +24,14 @@ local states = {
     visible = false,
     error = nil,
     command = "",
-    console = {}
+    console = {},
+    incoming = 0,
+    outgoing = 0,
 }
 
 local function onCommand(command)
-    table.insert(states.console, "> " .. command)
+    table.insert(states.console, command)
+    states.incoming = states.incoming + #command + 2
 end
 
 local function onDisconnection()
@@ -82,7 +87,12 @@ local function sendCommand()
     end
     states.socket:SendCommand(command)
     table.insert(states.console, "$ " .. command)
+    states.outgoing = states.outgoing + #command + 2
     states.command = ""
+end
+
+local function clearConsole()
+    states.console = {}
 end
 
 registerForEvent('onOverlayOpen', function() states.visible = true end)
@@ -95,36 +105,56 @@ local function drawSettings(width, height)
 
     ImGui.AlignTextToFramePadding()
     ImGui.Text("IP Address:")
-    ImGui.SameLine(140)
+    ImGui.SameLine(theme.field.width)
+    ImGui.PushItemWidth(width - theme.field.width)
     local ipAddress = ImGui.InputTextWithHint("##ipAddress", "127.0.0.1", states.ipAddress, 17)
+    ImGui.PopItemWidth()
     if #ipAddress >= 7 and #ipAddress <= 16 then
         states.ipAddress = ipAddress
     end
 
     ImGui.AlignTextToFramePadding()
     ImGui.Text("Port:")
-    ImGui.SameLine(140)
-    local port = ImGui.InputInt("##port", states.port, 1, 10)
+    ImGui.SameLine(theme.field.width)
+    ImGui.PushItemWidth(width - theme.field.width)
+    ---@type any?
+    local port = tostring(states.port)
+    port = ImGui.InputTextWithHint("##port", "2077", port, 6, ImGuiInputTextFlags.CharsDecimal +
+        ImGuiInputTextFlags.CharsNoBlank)
+    ImGui.PopItemWidth()
+    if port == nil or #port == 0 then
+        port = 0
+    else
+        port = tonumber(port)
+        port = math.floor(port)
+    end
     if port >= 1024 and port <= 49151 then
         states.port = port
     end
 end
 
 local function drawSocket(width, height)
+    local color = {}
+
     ImGui.TextDisabled("SOCKET")
     ImGui.Separator()
     ImGui.Spacing()
 
-    ImGui.AlignTextToFramePadding()
     local state = isConnected()
     local status = "offline"
     local action = "Connect"
+    color = theme.colors.error
+
     if state then
         status = "online"
         action = "Disconnect"
+        color = theme.colors.success
     end
-    ImGui.Text("Status: " .. status)
-    ImGui.SameLine(140)
+    ImGui.AlignTextToFramePadding()
+    ImGui.Text("Status:")
+    ImGui.SameLine()
+    ImGui.TextColored(color[1], color[2], color[3], color[4], status)
+    ImGui.SameLine(theme.field.width)
 
     if ImGui.Button(action, -1, 0) then
         if not state then
@@ -136,11 +166,17 @@ local function drawSocket(width, height)
 
     if states.error ~= nil then
         ImGui.AlignTextToFramePadding()
-        local color = theme.colors.error
+        color = theme.colors.error
         ImGui.PushStyleColor(ImGuiCol.Text, color[1], color[2], color[3], color[4])
         ImGui.TextWrapped(states.error)
         ImGui.PopStyleColor()
     end
+
+    ImGui.AlignTextToFramePadding()
+    ImGui.Text(string.format("Incoming: %d bytes", states.incoming))
+
+    ImGui.AlignTextToFramePadding()
+    ImGui.Text(string.format("Outgoing: %d bytes", states.outgoing))
 end
 
 local function drawConsole(width, height)
@@ -148,14 +184,12 @@ local function drawConsole(width, height)
     ImGui.Separator()
     ImGui.Spacing()
 
-    ImGui.AlignTextToFramePadding()
-    ImGui.Text("Command:")
-    ImGui.SameLine(140)
-
-    ImGui.PushItemWidth((width - 140) - 24)
+    ImGui.PushItemWidth(width - 2 * 24)
     states.command = ImGui.InputText("##command", states.command, 1024)
     ImGui.PopItemWidth()
+
     ImGui.SameLine()
+
     if ImGui.ArrowButton("Button", ImGuiDir.Right) or ImGui.IsKeyReleased(ImGuiKey.Enter) then
         sendCommand()
     end
@@ -163,18 +197,20 @@ local function drawConsole(width, height)
         ImGui.SetTooltip("Send command")
     end
 
+    ImGui.SameLine()
+
+    if ImGui.Button(" X ") then
+        clearConsole()
+    end
+    if ImGui.IsItemHovered() then
+        ImGui.SetTooltip("Clear console")
+    end
+
     ImGui.Spacing()
 
     if ImGui.BeginChild("##console", 0, 0, true, ImGuiWindowFlags.HorizontalScrollbar) then
         for _, command in ipairs(states.console) do
-            local color = {}
-
-            if command:find("^%$") ~= nil then
-                color = theme.colors.input
-            else
-                color = theme.colors.output
-            end
-            ImGui.TextColored(color[1], color[2], color[3], color[4], command)
+            ImGui.Text(command)
         end
         ImGui.EndChild()
     end
@@ -184,7 +220,7 @@ registerForEvent('onDraw', function()
     if not states.visible then
         return
     end
-    ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, 380, 320)
+    ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, 280, 320)
     if not ImGui.Begin("RedSocket") then
         ImGui.End()
         return
