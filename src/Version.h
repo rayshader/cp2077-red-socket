@@ -1,3 +1,5 @@
+// This file was generated with XMake, do not edit manually.
+
 #pragma once
 
 #define REDSOCKET_MAJOR 0

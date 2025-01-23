@@ -29,6 +29,8 @@ target("RedSocket")
         local header = path.join(os.projectdir(), "src", "Version.h")
 
         io.writefile(header, string.format([[
+// This file was generated with XMake, do not edit manually.
+
 #pragma once
 
 #define REDSOCKET_MAJOR %s
@@ -56,8 +58,10 @@ target("RedSocket")
             end
             print("RedSocket is installed in game's directory.")
         elseif is_mode("release") then
+            local version = get_config("version"):gsub("%-", "%%%-")
+
             stdout, _ = os.iorunv("red-cli", {"pack"})
-            if string.find(stdout, "Archive \27%[1mRedSocket-0.1.0.zip\27%[22m ready") == nil then
+            if string.find(stdout, "Archive \27%[1mRedSocket%-" .. version .. ".zip\27%[22m ready") == nil then
                 print("Failed to create archive for RedSocket.")
                 return
             end
