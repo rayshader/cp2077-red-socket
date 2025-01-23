@@ -12,12 +12,12 @@ RedSocket::~RedSocket() {
     m_context.stop();
 }
 
-void RedSocket::RegisterListener(const Red::Handle<Red::IScriptable>& p_object, const Red::CName& p_onCommandReceived,
-                                 const Red::Optional<Red::CName>& p_onDisconnected) {
+void RedSocket::RegisterListener(const Red::Handle<Red::IScriptable>& p_object, const Red::CName& p_onCommand,
+                                 const Red::Optional<Red::CName>& p_onDisconnection) {
     m_callback = {
             .Object = p_object,
-            .OnCommand = p_onCommandReceived,
-            .OnDisconnection = p_onDisconnected.value,
+            .OnCommand = p_onCommand,
+            .OnDisconnection = p_onDisconnection.value,
     };
 }
 
@@ -104,11 +104,11 @@ void RedSocket::SendCommand(const Red::CString& p_command) {
 }
 
 void RedSocket::ReadCommand() {
-    static char buffer[kBufferSize];
+    static char buffer[BUFFER_SIZE];
 
-    std::fill_n(buffer, kBufferSize, '\0');
+    std::fill_n(buffer, BUFFER_SIZE, '\0');
     try {
-        const auto length = m_socket.read_some(asio::buffer(buffer, kBufferSize));
+        const auto length = m_socket.read_some(asio::buffer(buffer, BUFFER_SIZE));
 
         if (length == 0) {
             return;

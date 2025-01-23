@@ -3,12 +3,13 @@
 #include "RedSocketPCH.h"
 
 #include <atomic>
-#include <vector>
-#include <deque>
+#include <string>
 
 #include <asio.hpp>
 #include <RED4ext/Scripting/IScriptable.hpp>
 #include <RedLib.hpp>
+
+#define BUFFER_SIZE 4096
 
 class RedSocket : public Red::IScriptable {
     struct RedCallback {
@@ -16,7 +17,6 @@ class RedSocket : public Red::IScriptable {
         Red::CName OnCommand;
         Red::CName OnDisconnection;
     };
-    constexpr static std::size_t kBufferSize = 1024;
 
     asio::io_context m_context;
     asio::ip::tcp::socket m_socket;
@@ -24,10 +24,9 @@ class RedSocket : public Red::IScriptable {
     Red::CString m_ipAddress;
     uint16_t m_port;
     std::atomic_bool m_isConnected;
+    RedCallback m_callback;
 
     std::string m_buffer;
-
-    RedCallback m_callback;
 
     void ReadCommand();
     Red::CString GetCommand();
@@ -38,8 +37,8 @@ public:
 
     bool IsConnected() const;
 
-    void RegisterListener(const Red::Handle<Red::IScriptable>& p_object, const Red::CName& p_onCommandReceived,
-                          const Red::Optional<Red::CName>& p_onDisconnected);
+    void RegisterListener(const Red::Handle<Red::IScriptable>& p_object, const Red::CName& p_onCommand,
+                          const Red::Optional<Red::CName>& p_onDisconnection);
 
     bool Connect(const Red::CString& p_ipAddress, uint16_t p_port);
     void Disconnect();

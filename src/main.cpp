@@ -7,7 +7,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle p_handle, RED4ext:
     switch (p_reason)  {
         case RED4ext::EMainReason::Load: {
             Logger::Load(p_handle, p_sdk);
-            //*
+            /*
 #ifdef REDSOCKET_DEBUG
             Logger::Debug("Waiting for debugger...");
             while (!::IsDebuggerPresent()) {

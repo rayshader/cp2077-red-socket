@@ -2,8 +2,6 @@
 
 #include <atomic>
 #include <string>
-#include <vector>
-#include <deque>
 
 #include <asio.hpp>
 #include <RED4ext/RED4ext.hpp>
