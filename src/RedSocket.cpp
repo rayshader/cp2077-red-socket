@@ -88,7 +88,7 @@ void RedSocket::Poll() {
 void RedSocket::SendCommand(const Red::CString& p_command) {
     std::string message(p_command.c_str());
 
-    if (message.find_first_of("\r\n") != std::string::npos) {
+    if (message.find("\r\n") != std::string::npos) {
         return;
     }
     message += "\r\n";
