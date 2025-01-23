@@ -30,6 +30,10 @@ CET.
 
 2. Extract the [latest archive] into the Cyberpunk 2077 directory.
 
+## Demo
+
+![Screenshot of CET example](demo.png)
+
 ## Usage
 
 This plugin can be used with redscript and CET. It allows any length of commands
