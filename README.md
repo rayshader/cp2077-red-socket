@@ -36,7 +36,7 @@ This plugin can be used with redscript and CET. It allows any length of commands
 to be sent and received.
 
 > [!NOTE]  
-> Never include `\r\n` in a command, it is used internally. If you do, command
+> Don't include `\r\n` in a command, it is used internally. If you do, command
 > will be ignored.
 
 ### Redscript
@@ -68,6 +68,7 @@ Connect to a server:
 ```swift
 if !socket.Connect("127.0.0.1", 2077) {
     FTLog(s"Failed to connect on 127.0.0.1:2077");
+    return;
 }
 FTLog(s"Ready to send commands.");
 ```
