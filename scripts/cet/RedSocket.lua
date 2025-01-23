@@ -1,7 +1,7 @@
----@class Socket
+---@class RedSocket
 ---
----@field socket any
----@field proxy any
+---@field socket any?
+---@field proxy any?
 local RedSocket = {}
 
 function RedSocket:new()
@@ -53,7 +53,7 @@ function RedSocket:Disconnect()
   self.socket:Disconnect()
 end
 
----@param command string
+---@param command string it must not include `\r\n` or command will be ignored.
 function RedSocket:SendCommand(command)
   self.socket:SendCommand(command)
 end

@@ -30,6 +30,10 @@ local function onCommand(command)
 end
 
 local function onDisconnection()
+    local RedSocket = GetMod("RedSocket")
+
+    RedSocket.destroySocket(states.socket)
+    states.socket = nil
     states.command = ""
 end
 
