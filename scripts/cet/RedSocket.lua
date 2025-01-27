@@ -8,7 +8,7 @@ function RedSocket:new()
   local obj = {}
   setmetatable(obj, { __index = RedSocket })
 
-  obj.socket = Socket.new()
+  obj.socket = Socket.Create()
   obj.proxy = nil
   return obj
 end
@@ -19,15 +19,20 @@ function RedSocket:IsConnected()
 end
 
 ---@param onCommand function callback when a command is received
----@param onDisconnection function? optional callback to detect disconnection
-function RedSocket:RegisterListener(onCommand, onDisconnection)
-  if onCommand == nil then
+---@param onConnection function callback when connection is opened
+---@param onDisconnection function? optional callback when connection is closed
+function RedSocket:RegisterListener(onCommand, onConnection, onDisconnection)
+  if onCommand == nil or onConnection == nill then
     return
   end
   self.proxy = NewProxy({
     ["OnCommand"] = {
       args = {"String"},
       callback = function(command) onCommand(command) end,
+    },
+    ["OnConnection"] = {
+      args = {"Int32"},
+      callback = function(status) onConnection(status) end,
     },
     ["OnDisconnection"] = {
       args = {},
@@ -40,6 +45,7 @@ function RedSocket:RegisterListener(onCommand, onDisconnection)
   })
   self.socket:RegisterListener(self.proxy:Target(),
                                self.proxy:Function("OnCommand"),
+                               self.proxy:Function("OnConnection"),
                                self.proxy:Function("OnDisconnection"))
 end
 
@@ -56,6 +62,10 @@ end
 ---@param command string it must not include `\r\n` or command will be ignored.
 function RedSocket:SendCommand(command)
   self.socket:SendCommand(command)
+end
+
+function RedSocket:Destroy()
+  Socket.Destroy(self.socket)
 end
 
 return RedSocket

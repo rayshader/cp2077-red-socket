@@ -49,32 +49,40 @@ You need to create a `RedSocket.Socket`:
 ```swift
 import RedSocket.*
 
-let socket = new Socket();
-
-// If ref<Socket> is released, internal network interface will be shutdown.
-// It is expected to Disconnect the socket before instance is released.
+let socket: ref<Socket> = Socket.Create();
 ```
 
-Register listeners for incoming commands (optionally when connection is closed):
+> [!NOTE]  
+> Creating a socket with `new Socket()` will not work. Only the method above can
+> be used in order to poll events of the socket in background.
+
+Register listener with callbacks for commands/connection/disconnection.
 ```swift
 let object: ref<IScriptable>;
 
-socket.RegisterListener(object, n"OnCommand", n"OnDisconnection");
+socket.RegisterListener(object, n"OnCommand", n"OnConnection", n"OnDisconnection");
 ```
 
 > [!NOTE]  
 > You must register a listener before calling `Connect`. Any attempts of 
 > connection without a listener will be ignored.
+> 
 > Last argument is optional, declare it if you want to be notified when 
 > connection is closed by the remote server.
 
 Connect to a server:
 ```swift
-if !socket.Connect("127.0.0.1", 2077) {
-    FTLog(s"Failed to connect on 127.0.0.1:2077");
-    return;
+socket.Connect("127.0.0.1", 2077);
+
+// in class of `object` above
+public cb func OnConnection(status: Int32) {
+    if status != 0 {
+        FTLog(s"Failed to connect on 127.0.0.1:2077");
+        // See in red4ext/logs/ for more details.
+        return;
+    }
+    FTLog(s"Ready to read/write commands.");
 }
-FTLog(s"Ready to send commands.");
 ```
 
 Send a message:
@@ -82,31 +90,38 @@ Send a message:
 socket.SendCommand("chat Hello world!");
 ```
 
-Your callback for incoming commands will be executed whenever commands are fully
+Your callback for incoming commands will be executed when commands are fully
 received.
 ```swift
 // in class of `object` above
-
 public cb func OnCommand(command: String) {
     FTLog(s"Received command: \(command)");
 }
 ```
 
-Your callback for disconnection will be executed whenever the remote server 
+Disconnect from the server:
+```swift
+socket.Disconnect();
+```
+
+Your callback for disconnection will be executed whenever the remote server
 closes the connection, or when you close the socket on your end.
 ```swift
 // in class of `object` above
-
 public cb func OnDisconnection() {
-    FTLog(s"Connection is now closed.");
+    FTLog(s"Connection is closed.");
 }
 ```
 
-Disconnect from the server like this:
+When you don't need the socket anymore:
 ```swift
-socket.Disconnect();
-FTLog(s"Connection is closed.");
+Socket.Destroy(socket);
 ```
+
+> [!NOTE]  
+> Usually, a `Socket.Create` call should be followed by a `Socket.Destroy` call.
+> In any-case, the plugin will try to disconnect and dispose of remaining 
+> sockets when the game shuts down.
 
 ### Cyber Engine Tweaks
 
@@ -127,29 +142,41 @@ local socket = RedSocket.createSocket()
 
 Register listener with callbacks:
 ```lua
+---@param command string
 local function OnCommand(command)
     print("Command: " .. command)
+end
+
+---@param status integer
+local function OnConnection(status)
+    if status ~= 0 then
+        print("Failed to connect to server.")
+        -- See in red4ext/logs/ for more details.
+        return
+    end
+    print("Ready to read/write commands.")
 end
 
 local function OnDisconnection()
     print("Connection is closed.")
 end
 
-socket:RegisterListener(OnCommand, OnDisconnection)
+socket:RegisterListener(OnCommand, OnConnection, OnDisconnection)
 ```
 
 Connect to a server:
 ```lua
-if not socket:Connect("127.0.0.1", 2077) then
-    print("Failed to connect to server.")
-    return
-end
-print("Ready to send commands.")
+socket:Connect("127.0.0.1", 2077)
 ```
 
 Send a command:
 ```lua
 socket:SendCommand("chat Hello world!")
+```
+
+Disconnect from server:
+```lua
+socket:Disconnect()
 ```
 
 > [!TIP]  
@@ -164,7 +191,7 @@ Contributions are welcome, feel free to fill an issue or a PR.
 ## Usage
 1. Install requirements:
 - XMake
-- Visual Studio Community 2022+
+- Visual Studio 2022+
 - [red-cli] v0.4.0+
 2. Configure project with:
 ```shell

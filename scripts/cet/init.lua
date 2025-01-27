@@ -2,7 +2,7 @@ function require_verbose(path)
   local import, err = require(path)
 
   if err then
-      error(err)
+    error(err)
   end
   return import
 end
@@ -22,7 +22,9 @@ local api = {
   destroySocket = function(socket)
     for i, item in ipairs(sockets) do
       if item == socket then
+        socket:Destroy()
         table.remove(socket, i)
+        return
       end
     end
   end
@@ -31,6 +33,7 @@ local api = {
 registerForEvent('onShutdown', function()
   for _, socket in ipairs(sockets) do
     socket:Disconnect()
+    socket:Destroy()
   end
 end)
 

@@ -8,6 +8,7 @@
 #include <RedLib.hpp>
 
 #include "Version.h"
+#include "Logger.h"
 
 #include "RedSocket.h"
-#include "Logger.h"
+#include "SocketService.h"

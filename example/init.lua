@@ -34,6 +34,14 @@ local function onCommand(command)
     states.incoming = states.incoming + #command + 2
 end
 
+local function onConnection(status)
+	if status ~= 0 then
+        states.error = "Failed to connect on server."
+		return
+    end
+	states.error = nil
+end
+
 local function onDisconnection()
     local RedSocket = GetMod("RedSocket")
 
@@ -57,15 +65,9 @@ local function connect()
         local RedSocket = GetMod("RedSocket")
 
         states.socket = RedSocket.createSocket()
-        states.socket:RegisterListener(onCommand, onDisconnection)
+        states.socket:RegisterListener(onCommand, onConnection, onDisconnection)
     end
-    local result = states.socket:Connect(states.ipAddress, states.port)
-
-    if not result then
-        states.error = "Failed to connect on server."
-    else
-        states.error = nil
-    end
+    states.socket:Connect(states.ipAddress, states.port)
 end
 
 local function disconnect()
@@ -243,5 +245,6 @@ end)
 registerForEvent('onShutdown', function()
     if states.socket ~= nil then
         states.socket:Disconnect()
+		    states.socket:Destroy()
     end
 end)

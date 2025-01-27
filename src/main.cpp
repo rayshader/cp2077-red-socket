@@ -3,18 +3,28 @@
 #include "Version.h"
 #include "Logger.h"
 
+namespace {
+    bool OnUpdate(Red::CGameApplication* p_app) {
+        SocketService::Get().Update();
+        return false;
+    }
+
+    bool OnStop(Red::CGameApplication* p_app) {
+        SocketService::Get().Stop();
+        return true;
+    }
+}
+
 RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle p_handle, RED4ext::EMainReason p_reason, const RED4ext::Sdk* p_sdk) {
     switch (p_reason)  {
         case RED4ext::EMainReason::Load: {
             Logger::Load(p_handle, p_sdk);
-            /*
-#ifdef REDSOCKET_DEBUG
-            Logger::Debug("Waiting for debugger...");
-            while (!::IsDebuggerPresent()) {
-                ::Sleep(200);
-            }
-#endif
-            //*/
+            Red::GameState state;
+
+            state.OnEnter = nullptr;
+            state.OnUpdate = &OnUpdate;
+            state.OnExit = &OnStop;
+            p_sdk->gameStates->Add(p_handle, Red::EGameStateType::Running, &state);
             Red::TypeInfoRegistrar::RegisterDiscovered();
             break;
         }
