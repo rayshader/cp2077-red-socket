@@ -55,7 +55,10 @@ public:
 
     void Run();
     void Poll();
-    void SendCommand(const Red::CString& p_command);
+    void SendCommand(const Red::CString& p_command,
+                     const Red::Optional<int32_t, 10>& p_limit,
+                     const Red::Optional<Red::Handle<Red::IScriptable>>& p_target,
+                     const Red::Optional<Red::CName>& p_error);
 
     RTTI_IMPL_TYPEINFO(RedSocket)
     RTTI_IMPL_ALLOCATOR()

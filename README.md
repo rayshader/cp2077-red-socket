@@ -90,6 +90,27 @@ Send a message:
 socket.SendCommand("chat Hello world!");
 ```
 
+You can optionally provide a callback to know when a command failed to send.
+By default, it will retry up to 10 times until the entire message is sent.
+A minimum of 1 failed attempt is allowed, any value below will default to 10.
+```swift
+socket.SendCommand("<big chunk>", 5, this, n"OnError");
+//                                ^  ^     ^
+//                                |  |     | method to call with `cb` keyword
+//                                |  |
+//                                |  | object to call the method on
+//                                |
+//                                | maximum attempts before aborting and 
+//                                  triggering error callback
+
+public cb func OnError() {
+    FTLogError(s"Failed to send command after 5 attempts. Try again...");
+}
+```
+
+If the remote socket is closed while trying to send a command, error callback
+will not be triggered, but `onDisconnection` will.
+
 Your callback for incoming commands will be executed when commands are fully
 received.
 ```swift
@@ -161,7 +182,15 @@ local function OnDisconnection()
     print("Connection is closed.")
 end
 
-socket:RegisterListener(OnCommand, OnConnection, OnDisconnection)
+-- Optional
+local function OnError()
+	print("Cannot send command: too many failed attempts.")
+end
+
+socket:RegisterListener(OnCommand,
+                        OnConnection,
+                        OnDisconnection,
+                        OnError)
 ```
 
 Connect to a server:
@@ -172,6 +201,11 @@ socket:Connect("127.0.0.1", 2077)
 Send a command:
 ```lua
 socket:SendCommand("chat Hello world!")
+```
+
+Send a command with error callback:
+```lua
+socket:SendCommand("<big chunk>", 5, OnError)
 ```
 
 Disconnect from server:

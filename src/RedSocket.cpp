@@ -143,13 +143,17 @@ void RedSocket::Poll() {
     });
 }
 
-void RedSocket::SendCommand(const Red::CString& p_command) {
+void RedSocket::SendCommand(const Red::CString& p_command,
+                            const Red::Optional<int32_t, 10>& p_limit,
+                            const Red::Optional<Red::Handle<Red::IScriptable>>& p_target,
+                            const Red::Optional<Red::CName>& p_onError) {
     if (!IsTracked()) {
         return;
     }
     if (!IsConnected()) {
         return;
     }
+    const int32_t limit = p_limit.value < 1 ? 10 : p_limit.value;
     std::string message(p_command.c_str());
 
     if (message.find("\r\n") != std::string::npos) {
@@ -158,11 +162,36 @@ void RedSocket::SendCommand(const Red::CString& p_command) {
     message += "\r\n";
     Red::JobQueue queue;
 
-    queue.Dispatch([this, message] {
-        try {
-            asio::write(m_socket, asio::buffer(message));
-        } catch (const std::exception& e) {
-            Logger::Error("Failed to send command: {}", e.what());
+    queue.Dispatch([this, message, limit, p_target, p_onError] {
+        const std::size_t total = message.size();
+        std::string packet = message;
+        std::size_t offset = 0;
+        int errors = 0;
+
+        while (offset < total && errors < limit) {
+            try {
+                const auto buffer = asio::buffer(packet);
+                const auto sent = m_socket.write_some(buffer);
+
+                offset += sent;
+                packet = packet.substr(sent);
+            } catch (const asio::system_error& e) {
+                if (e.code() == asio::error::eof) {
+                    Disconnect();
+                    return;
+                }
+                Logger::Error("Cannot send command ({}): {}", e.code().value(), e.what());
+                errors++;
+            }
+        }
+        if (errors == limit && offset != total) {
+            Logger::Error("Cannot send command: too much attempt failed.");
+            const auto target = p_target.value;
+            const auto onError = p_onError.value;
+
+            if (target && !onError.IsNone()) {
+                Red::CallVirtual(target.GetPtr(), onError);
+            }
         }
     });
 }

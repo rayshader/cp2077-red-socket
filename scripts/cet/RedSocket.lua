@@ -21,8 +21,9 @@ end
 ---@param onCommand function callback when a command is received
 ---@param onConnection function callback when connection is opened
 ---@param onDisconnection function? optional callback when connection is closed
-function RedSocket:RegisterListener(onCommand, onConnection, onDisconnection)
-  if onCommand == nil or onConnection == nill then
+---@param onError function? optional callback when sending a command failed after too many attempts
+function RedSocket:RegisterListener(onCommand, onConnection, onDisconnection, onError)
+  if onCommand == nil or onConnection == nil then
     return
   end
   self.proxy = NewProxy({
@@ -39,6 +40,14 @@ function RedSocket:RegisterListener(onCommand, onConnection, onDisconnection)
       callback = function()
         if onDisconnection ~= nil then
           onDisconnection()
+        end
+      end,
+    },
+    ["OnError"] = {
+      args = {},
+      callback = function()
+        if onError ~= nil then
+          onError()
         end
       end,
     }
@@ -60,8 +69,13 @@ function RedSocket:Disconnect()
 end
 
 ---@param command string it must not include `\r\n` or command will be ignored.
-function RedSocket:SendCommand(command)
-  self.socket:SendCommand(command)
+---@param limit integer? at least 1, default is 10 when nil.
+function RedSocket:SendCommand(command, limit)
+  if limit == nil then
+    self.socket:SendCommand(command)
+  else
+    self.socket:SendCommand(command, limit, self.proxy:Target(), self.proxy:Function("OnError"))
+  end
 end
 
 function RedSocket:Destroy()

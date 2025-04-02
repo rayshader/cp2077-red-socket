@@ -15,5 +15,8 @@ public native class Socket {
     public native func Connect(ipAddress: String, port: Uint16);
     public native func Disconnect();
 
-    public native func SendCommand(command: String);
+    public native func SendCommand(command: String,
+                                   opt limit: Int32,
+                                   opt target: ref<IScriptable>,
+                                   opt onError: CName);
 }
