@@ -77,7 +77,7 @@ socket.Connect("127.0.0.1", 2077);
 // in class of `object` above
 public cb func OnConnection(status: Int32) {
     if status != 0 {
-        FTLog(s"Failed to connect on 127.0.0.1:2077");
+        FTLogError(s"Failed to connect on 127.0.0.1:2077");
         // See in red4ext/logs/ for more details.
         return;
     }
@@ -178,6 +178,7 @@ local function OnConnection(status)
     print("Ready to read/write commands.")
 end
 
+-- Optional
 local function OnDisconnection()
     print("Connection is closed.")
 end
