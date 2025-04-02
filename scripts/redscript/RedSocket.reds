@@ -2,7 +2,7 @@ module RedSocket
 
 public native class Socket {
     public static native func Create() -> ref<Socket>;
-	  public static native func Destroy(socket: ref<Socket>);
+    public static native func Destroy(socket: ref<Socket>);
 
     public native func IsConnected() -> Bool;
 
@@ -10,7 +10,7 @@ public native class Socket {
                                         onCommand: CName,
                                         onConnection: CName,
                                         opt onDisconnection: CName);
-	  public native func UnregisterListener();
+    public native func UnregisterListener();
 
     public native func Connect(ipAddress: String, port: Uint16);
     public native func Disconnect();
