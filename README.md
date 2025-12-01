@@ -34,6 +34,8 @@ CET.
 
 ![Screenshot of CET example](demo.png)
 
+(see /examples/init.lua for reference, or copy into {GAME_DIR}/bin/x64/plugins/cyber_engine_tweaks/mods/{YOUR_MOD} to use)
+
 ## Usage
 
 This plugin can be used with redscript and CET. It allows any length of commands
