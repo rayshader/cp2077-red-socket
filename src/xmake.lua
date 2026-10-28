@@ -2,6 +2,7 @@ target("RedSocket")
     set_kind("shared")
     set_group("RedSocket")
     set_basename("RedSocket")
+    set_version(get_config("version"))
 
     -- Configuration
     add_extrafiles(
