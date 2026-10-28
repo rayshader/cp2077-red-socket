@@ -1,17 +1,30 @@
 target("RedSocket")
     set_kind("shared")
     set_group("RedSocket")
-
     set_basename("RedSocket")
+
+    -- Configuration
+    add_extrafiles(
+        "xmake.lua",
+        "../.clang-format",
+        "../.gitattributes",
+        "../.gitignore",
+        "../.gitmodules",
+        "../Config.h.in",
+        "../LICENSE",
+        "../README.md",
+        "../red.config.json")
 
     -- Files
     add_files("**.cpp")
     add_headerfiles("**.h", "**.hpp")
-
-    set_pcxxheader("RedSocketPCH.h")
     add_includedirs(".")
 
-    -- Configuration
+    set_configdir("$(builddir)/config")
+    add_configfiles("../Config.h.in")
+    add_includedirs("$(builddir)/config")
+
+    set_pcxxheader("RedSocketPCH.h")
 
     -- Dependencies
     add_deps(
@@ -21,24 +34,6 @@ target("RedSocket")
     -- Linking
     add_packages("asio")
     add_links("User32")
-
-    -- Generate version header
-    on_load(function (target)
-        local version = get_config("version")
-        local major, minor, patch = version:match("(%d+)%.(%d+)%.(%d+)")
-        local header = path.join(os.projectdir(), "src", "Version.h")
-
-        io.writefile(header, string.format([[
-// This file was generated with XMake, do not edit manually.
-
-#pragma once
-
-#define REDSOCKET_MAJOR %s
-#define REDSOCKET_MINOR %s
-#define REDSOCKET_PATCH %s
-
-#define REDSOCKET_VERSION "%s"]], major, minor, patch, version))
-        end)
 
     -- Install scripts and library in game's directory
     after_build(function()

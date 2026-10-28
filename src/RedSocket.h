@@ -1,19 +1,10 @@
 ﻿#pragma once
 
-#include "RedSocketPCH.h"
-
-#include <atomic>
-#include <string>
-
-#include <asio.hpp>
-#include <RED4ext/Scripting/IScriptable.hpp>
-#include <RedLib.hpp>
-
 #define BUFFER_SIZE 4096
 
 class RedSocket : public Red::IScriptable {
     struct RedCallback {
-        Red::Handle<Red::IScriptable> Object;
+        Red::Handle<IScriptable> Object;
         Red::CName OnCommand;
         Red::CName OnConnection;
         Red::CName OnDisconnection;
@@ -45,9 +36,8 @@ public:
     bool IsConnected() const;
     bool HasListener() const;
 
-    void RegisterListener(const Red::Handle<Red::IScriptable>& p_object, const Red::CName& p_onCommand,
-                          const Red::CName& p_onConnection,
-                          const Red::Optional<Red::CName>& p_onDisconnection);
+    void RegisterListener(const Red::Handle<IScriptable>& p_object, const Red::CName& p_onCommand,
+                          const Red::CName& p_onConnection, const Red::Optional<Red::CName>& p_onDisconnection);
     void UnregisterListener();
 
     void Connect(const Red::CString& p_ipAddress, uint16_t p_port);
@@ -55,13 +45,11 @@ public:
 
     void Run();
     void Poll();
-    void SendCommand(const Red::CString& p_command,
-                     const Red::Optional<int32_t, 10>& p_limit,
-                     const Red::Optional<Red::Handle<Red::IScriptable>>& p_target,
-                     const Red::Optional<Red::CName>& p_error);
+    void SendCommand(const Red::CString& p_command, const Red::Optional<int32_t, 10>& p_limit,
+                     const Red::Optional<Red::Handle<IScriptable>>& p_target, const Red::Optional<Red::CName>& p_error);
 
-    RTTI_IMPL_TYPEINFO(RedSocket)
-    RTTI_IMPL_ALLOCATOR()
+    RTTI_IMPL_TYPEINFO(RedSocket);
+    RTTI_IMPL_ALLOCATOR();
 };
 
 RTTI_DEFINE_CLASS(RedSocket, "Socket", {
@@ -79,4 +67,4 @@ RTTI_DEFINE_CLASS(RedSocket, "Socket", {
     RTTI_METHOD(Disconnect);
 
     RTTI_METHOD(SendCommand);
-})
+});

@@ -1,16 +1,16 @@
 # RedSocket
 
-![Cyberpunk 2077](https://img.shields.io/badge/Cyberpunk%202077-v2.31-blue)
+![Cyberpunk 2077](https://img.shields.io/badge/Cyberpunk%202077-v2.5-blue)
 ![GitHub License](https://img.shields.io/github/license/rayshader/cp2077-red-socket)
 [![Donate](https://img.shields.io/badge/donate-buy%20me%20a%20coffee-yellow)](https://www.buymeacoffee.com/lpfreelance)
 
 This plugin allows to connect to a remote TCP server. It is mainly intended for
 research purpose. It allows to read and write commands. As an example, it can
-be used with a debugger (with its own server script plugin) to send commands 
-(e.g. to add breakpoints, watch values, ...). It includes an easy-to-use API for
-CET.
+be used with a debugger (with its own server script plugin) to send commands
+(e.g. to add breakpoints, watch values, ...). It includes an easy-to-use API
+for CET.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > This implementation is not secure and don't provide any kind of security when
 > sending and reading messages. Only use this tool at your own risks, with your
 > own TCP server on a local network.
@@ -18,15 +18,15 @@ CET.
 # Getting started
 
 ## Compatibility
-- Cyberpunk 2077 v2.31
-- [RED4ext] v1.29.0+
-- [Redscript] 0.5.27+
-- [Cyber Engine Tweaks] 1.36.0+
+- Cyberpunk 2077 v2.5
+- [RED4ext] v1.31.0+
+- [Redscript] 0.5.32+
+- [Cyber Engine Tweaks] 1.38.0+
 
 ## Installation
 1. Install requirements:
-- [RED4ext] v1.29.0+
-- [Cyber Engine Tweaks] 1.36.0+
+- [RED4ext] v1.31.0+
+- [Cyber Engine Tweaks] 1.38.0+
 
 2. Extract the [latest archive] into the Cyberpunk 2077 directory.
 
@@ -39,7 +39,7 @@ CET.
 This plugin can be used with redscript and CET. It allows any length of commands
 to be sent and received.
 
-> [!NOTE]  
+> [!NOTE]
 > Don't include `\r\n` in a command, it is used internally. If you do, command
 > will be ignored.
 
@@ -52,7 +52,7 @@ import RedSocket.*
 let socket: ref<Socket> = Socket.Create();
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > Creating a socket with `new Socket()` will not work. Only the method above can
 > be used in order to poll events of the socket in background.
 
@@ -63,11 +63,11 @@ let object: ref<IScriptable>;
 socket.RegisterListener(object, n"OnCommand", n"OnConnection", n"OnDisconnection");
 ```
 
-> [!NOTE]  
-> You must register a listener before calling `Connect`. Any attempts of 
+> [!NOTE]
+> You must register a listener before calling `Connect`. Any attempts of
 > connection without a listener will be ignored.
-> 
-> Last argument is optional, declare it if you want to be notified when 
+>
+> Last argument is optional, declare it if you want to be notified when
 > connection is closed by the remote server.
 
 Connect to a server:
@@ -139,9 +139,9 @@ When you don't need the socket anymore:
 Socket.Destroy(socket);
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > Usually, a `Socket.Create` call should be followed by a `Socket.Destroy` call.
-> In any-case, the plugin will try to disconnect and dispose of remaining 
+> In any-case, the plugin will try to disconnect and dispose of remaining
 > sockets when the game shuts down.
 
 ### Cyber Engine Tweaks
@@ -214,9 +214,9 @@ Disconnect from server:
 socket:Disconnect()
 ```
 
-> [!TIP]  
+> [!TIP]
 > You should close sockets based on your usage. In any case, CET plugin keeps
-> track of sockets you created. On shutdown event, it will try to disconnect 
+> track of sockets you created. On shutdown event, it will try to disconnect
 > them.
 
 
@@ -245,7 +245,7 @@ It will install scripts and plugin in game's directory, thanks to [red-cli].
 ## Release
 1. Open .sln and build target `RedSocket` in Release mode.
 
-It will prepare outputs and create an archive ready to release. 
+It will prepare outputs and create an archive ready to release.
 
 <!-- Table of links -->
 [RED4ext]: https://github.com/WopsS/RED4ext
