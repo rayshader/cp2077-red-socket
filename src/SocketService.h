@@ -1,10 +1,5 @@
 ﻿#pragma once
 
-#include "RedSocketPCH.h"
-
-#include <RED4ext/RED4ext.hpp>
-#include <RedLib.hpp>
-
 #include "RedSocket.h"
 
 class SocketService {
@@ -14,7 +9,6 @@ class SocketService {
 public:
     static SocketService& Get() {
         static SocketService instance;
-
         return instance;
     }
 

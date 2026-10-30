@@ -147,5 +147,6 @@ Example:     watch 0x7ff6d9fd0000 handle
 commands["exit"] = on_exit
 commands["watch"] = on_watch
 
-thread = threading.Thread(target=run_server, daemon=True)
-thread.start()
+run_server()
+#thread = threading.Thread(target=run_server, daemon=True)
+#thread.start()
